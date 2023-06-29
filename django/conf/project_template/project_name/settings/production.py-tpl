@@ -1,0 +1,106 @@
+import os
+from .base import *
+
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+
+# Static files (CSS, JavaScript, Images)
+# Azure account credentials
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+# https://medium.com/@DawlysD/django-using-azure-blob-storage-to-handle-static-media-assets-from-scratch-90cbbc7d56be
+# https://medium.com/@DawlysD/django-using-azure-blob-storage-to-handle-static-media-assets-from-scratch-90cbbc7d56be
+
+STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+AZURE_ACCOUNT_NAME = '<azure container name>'
+AZURE_ACCOUNT_KEY = '<azure account key for this container>'
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_LOCATION = '<blob container name>'
+AZURE_CONTAINER = '<blob container name>'
+
+STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+
+
+# Email SMTP
+# https://docs.djangoproject.com/en/{{ docs_version }}/topics/email/#smtp-backend
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT", '25')
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", False)
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", False)
+EMAIL_TIMEOUT = os.environ.get("EMAIL_TIMEOUT")
+EMAIL_SSL_KEYFILE = os.environ.get("EMAIL_SSL_KEYFILE")
+EMAIL_SSL_CERTFILE = os.environ.get("EMAIL_SSL_CERTFILE")
+
+
+# Logging
+# https://docs.djangoproject.com/en/{{ docs_version }}/topics/logging/#logging
+# https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/#logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+        "default": {
+            "format": '%(asctime)s %(levelname)-8s %(name)-15s %(message)s',
+            "datefmt": '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'filters': {
+        'special': {
+            '()': 'project.logging.SpecialFilter',
+            'foo': 'bar',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/path/to/django/debug.log',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['special']
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'myproject.custom': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+            'filters': ['special']
+        }
+    }
+}

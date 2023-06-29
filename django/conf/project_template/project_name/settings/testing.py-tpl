@@ -1,0 +1,21 @@
+import os
+from .base import *
+
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+
+# Email SMTP
+# https://docs.djangoproject.com/en/{{ docs_version }}/topics/email/#smtp-backend
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Logging
+# https://docs.djangoproject.com/en/{{ docs_version }}/topics/logging/#logging
+# https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/#logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+}
